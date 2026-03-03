@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #FAFAFA;
+  /* Clean white background */
+  --color-primary-100: #F0F0F0;
+  --color-primary-500: #8E7A6B;
+  /* Muted earthy taupe */
+  --color-primary-600: #6B5B4F;
+  --color-primary-800: #3D332C;
+  --color-primary-900: #1C1917;
+  /* Deep charcoal for text, avoiding harsh browns */
+
+  --color-accent-400: #C2410C;
+  /* Subtle burnt orange */
+  --color-accent-500: #9A3412;
+  /* Rich elegant rust/red */
+
+  --color-green-800: #166534;
+  /* Traditional deep green */
+  --color-gold-500: #B49D6A;
+  /* Elegant muted gold */
+}
+
+@layer base {
+  body {
+    @apply bg-primary-50 text-primary-900 antialiased selection:bg-accent-500 selection:text-white transition-colors duration-300;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    /* Using a serif font stack for headers to give a traditional, elegant look */
+    font-family: "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    letter-spacing: -0.02em;
+  }
+}
