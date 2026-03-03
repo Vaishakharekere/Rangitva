@@ -28,9 +28,9 @@ export default function Storefront() {
                 </motion.div>
 
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1, ease: "easeOut" }}
                     className="relative z-10"
                 >
                     <h1 className="text-5xl md:text-7xl font-bold text-primary-900 tracking-tight font-serif mb-4">
@@ -78,10 +78,10 @@ export default function Storefront() {
                             <motion.div
                                 key={artwork.id}
                                 layout
-                                initial={{ opacity: 0, y: 40 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
+                                initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.85, y: -20 }}
+                                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                             >
                                 <ArtworkCard artwork={artwork} />
                             </motion.div>
