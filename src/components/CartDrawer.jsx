@@ -105,9 +105,7 @@ export default function CartDrawer() {
                     'content-type': 'application/json'
                 },
                 body: JSON.stringify({
-                    // Send to admin, CC the customer
                     to: [{ email: import.meta.env.VITE_ADMIN_EMAIL, name: "Admin" }],
-                    cc: [{ email: formData.email, name: formData.name }],
                     replyTo: { email: formData.email, name: formData.name },
                     subject: `New Order Request from ${formData.name}`,
                     htmlContent: emailHtml
