@@ -3,6 +3,7 @@ import { getArtworks, addArtwork, updateArtwork, deleteArtwork } from '../servic
 import { getOrders, updateOrderStatus } from '../services/orderService';
 import { Pencil, Trash2, Plus, X, Package, Image as ImageIcon } from 'lucide-react';
 import { generateEmailTemplate } from '../utils/emailTemplate';
+import { compressImage } from '../utils/imageUtils';
 /* eslint-disable no-unused-vars */
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -137,8 +138,11 @@ export default function Admin() {
 
         if (imageFile) {
             try {
+                // Compress image before uploading to speed up ImgBB api and Storefront loading
+                const compressedFile = await compressImage(imageFile, 1200, 1200, 0.7);
+
                 const imgData = new FormData();
-                imgData.append('image', imageFile);
+                imgData.append('image', compressedFile);
 
                 const response = await fetch(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`, {
                     method: 'POST',

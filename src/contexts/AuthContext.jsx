@@ -46,25 +46,7 @@ export function AuthProvider({ children }) {
     }
 
     async function signInWithGoogle() {
-        const result = await signInWithPopup(auth, googleProvider);
-        const user = result.user;
-
-        // Check if user already exists in Firestore
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-
-        // If not, create them (with empty phone/address as Google only provides name/email/photo)
-        if (!userDocSnap.exists()) {
-            await setDoc(userDocRef, {
-                name: user.displayName || 'Google User',
-                email: user.email,
-                phone: '',
-                address: '',
-                role: user.email === ADMIN_EMAIL ? 'admin' : 'user',
-                createdAt: new Date().toISOString()
-            });
-        }
-        return result;
+        return signInWithPopup(auth, googleProvider);
     }
 
     function logout() {
@@ -72,29 +54,33 @@ export function AuthProvider({ children }) {
     }
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                try {
-                    // Lazily create user document if it doesn't exist (e.g. created manually in Firebase Console)
-                    const userDocRef = doc(db, 'users', user.uid);
-                    const userDocSnap = await getDoc(userDocRef);
-                    if (!userDocSnap.exists()) {
-                        await setDoc(userDocRef, {
-                            name: user.displayName || '',
-                            email: user.email,
-                            phone: '',
-                            address: '',
-                            role: user.email === ADMIN_EMAIL ? 'admin' : 'user',
-                            createdAt: new Date().toISOString()
-                        });
-                    }
-                } catch (error) {
-                    console.error("Error checking/creating user doc during auth state change:", error);
-                }
-            }
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
             setCurrentUser(user);
             setIsAdmin(user?.email === ADMIN_EMAIL);
             setLoading(false);
+
+            if (user) {
+                // Run Firestore user doc check asynchronously in the background so it doesn't block the UI
+                const checkAndCreateUserDoc = async () => {
+                    try {
+                        const userDocRef = doc(db, 'users', user.uid);
+                        const userDocSnap = await getDoc(userDocRef);
+                        if (!userDocSnap.exists()) {
+                            await setDoc(userDocRef, {
+                                name: user.displayName || '',
+                                email: user.email,
+                                phone: '',
+                                address: '',
+                                role: user.email === ADMIN_EMAIL ? 'admin' : 'user',
+                                createdAt: new Date().toISOString()
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Error checking/creating user doc during auth state change:", error);
+                    }
+                };
+                checkAndCreateUserDoc();
+            }
         });
 
         return unsubscribe;
