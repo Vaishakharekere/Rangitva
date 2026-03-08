@@ -19,9 +19,9 @@ export const getOrders = async () => {
     return orderSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
-export const getOrdersByEmail = async (email) => {
+export const getOrdersByUserId = async (userId) => {
     const ordersCol = collection(db, COLLECTION_NAME);
-    const q = query(ordersCol, where('customerInfo.email', '==', email));
+    const q = query(ordersCol, where('userId', '==', userId));
     const orderSnapshot = await getDocs(q);
     const orders = orderSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     // Sort by createdAt descending (newest first)

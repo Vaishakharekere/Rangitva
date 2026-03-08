@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Package } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { getOrdersByEmail } from '../services/orderService';
+import { getOrdersByUserId } from '../services/orderService';
 import { Link } from 'react-router-dom';
 
 export default function MyOrders() {
@@ -12,9 +12,9 @@ export default function MyOrders() {
 
     useEffect(() => {
         const fetchMyOrders = async () => {
-            if (currentUser?.email) {
+            if (currentUser?.uid) {
                 try {
-                    const data = await getOrdersByEmail(currentUser.email);
+                    const data = await getOrdersByUserId(currentUser.uid);
                     setOrders(data);
                 } catch (error) {
                     console.error("Failed to fetch user orders:", error);
@@ -62,9 +62,9 @@ export default function MyOrders() {
                                         <p className="font-bold text-accent-500">₹{order.totalAmount.toLocaleString('en-IN')}</p>
                                     </div>
                                     <span className={`px-3 py-1 text-xs font-bold uppercase tracking-widest rounded-sm border ${order.status === 'Completed' ? 'bg-green-50 text-green-700 border-green-200' :
-                                            order.status === 'Processing' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                                                order.status === 'Cancelled' ? 'bg-red-50 text-red-700 border-red-200' :
-                                                    'bg-primary-50 text-primary-700 border-primary-200'
+                                        order.status === 'Processing' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                            order.status === 'Cancelled' ? 'bg-red-50 text-red-700 border-red-200' :
+                                                'bg-primary-50 text-primary-700 border-primary-200'
                                         }`}>
                                         {order.status}
                                     </span>

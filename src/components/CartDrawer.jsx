@@ -57,7 +57,11 @@ export default function CartDrawer() {
         setIsSubmitting(true);
 
         const orderData = {
-            customerInfo: formData,
+            userId: currentUser.uid,
+            customerInfo: {
+                ...formData,
+                email: currentUser.email // force matching email
+            },
             items: cartItems.map(item => ({
                 id: item.id,
                 title: item.title,
