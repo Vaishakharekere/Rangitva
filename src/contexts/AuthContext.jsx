@@ -5,10 +5,11 @@ import {
     signInWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
-    updateProfile
+    updateProfile,
+    signInWithPopup
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db, ADMIN_EMAIL } from '../firebase.config';
+import { auth, db, ADMIN_EMAIL, googleProvider } from '../firebase.config';
 
 const AuthContext = createContext();
 
@@ -42,6 +43,28 @@ export function AuthProvider({ children }) {
 
     function login(email, password) {
         return signInWithEmailAndPassword(auth, email, password);
+    }
+
+    async function signInWithGoogle() {
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+
+        // Check if user already exists in Firestore
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        // If not, create them (with empty phone/address as Google only provides name/email/photo)
+        if (!userDocSnap.exists()) {
+            await setDoc(userDocRef, {
+                name: user.displayName || 'Google User',
+                email: user.email,
+                phone: '',
+                address: '',
+                role: user.email === ADMIN_EMAIL ? 'admin' : 'user',
+                createdAt: new Date().toISOString()
+            });
+        }
+        return result;
     }
 
     function logout() {
@@ -82,6 +105,7 @@ export function AuthProvider({ children }) {
         isAdmin,
         login,
         signup,
+        signInWithGoogle,
         logout
     };
 

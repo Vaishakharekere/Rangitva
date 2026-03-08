@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { Menu, Search, ShoppingBag, X } from 'lucide-react';
+import { Menu, Search, ShoppingBag, X, Heart } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
@@ -103,6 +103,11 @@ export default function Navbar() {
                                     <Search className="w-5 h-5 shrink-0" />
                                 </button>
                             </form>
+
+                            {/* Wishlist */}
+                            <Link to="/wishlist" className="hover:text-accent-500 transition-colors h-8 flex items-center pr-1 sm:pr-2">
+                                <Heart className="w-5 h-5 shrink-0" />
+                            </Link>
 
                             {/* Cart */}
                             {!isAdmin && (

@@ -8,6 +8,7 @@ import Signup from './pages/Signup';
 import Profile from './pages/Profile';
 import MyOrders from './pages/MyOrders';
 import ArtworkDetails from './pages/ArtworkDetails';
+import Wishlist from './pages/Wishlist';
 import { AuthProvider } from './contexts/AuthContext';
 import { HelmetProvider } from 'react-helmet-async';
 import PrivateRoute from './components/PrivateRoute';
@@ -34,6 +35,7 @@ function AnimatedRoutes() {
             <MyOrders />
           </PrivateRoute>
         } />
+        <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Routes>
