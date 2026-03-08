@@ -5,11 +5,13 @@ import { ShoppingBag, ArrowLeft, Heart } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useCart } from '../contexts/CartContext';
 import { getArtworks } from '../services/artworkService';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ArtworkDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { addToCart } = useCart();
+    const { currentUser } = useAuth();
     const [artwork, setArtwork] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -24,6 +26,12 @@ export default function ArtworkDetails() {
     }, [id]);
 
     const toggleWishlist = () => {
+        if (!currentUser) {
+            alert("Please log in to save artworks to your Wishlist!");
+            navigate('/login');
+            return;
+        }
+
         setInWishlist(!inWishlist);
         const stored = localStorage.getItem('rangitva_wishlist');
         let arr = stored ? JSON.parse(stored) : [];

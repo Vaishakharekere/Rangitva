@@ -35,7 +35,11 @@ function AnimatedRoutes() {
             <MyOrders />
           </PrivateRoute>
         } />
-        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/wishlist" element={
+          <PrivateRoute>
+            <Wishlist />
+          </PrivateRoute>
+        } />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Routes>
