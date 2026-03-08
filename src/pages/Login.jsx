@@ -1,13 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const { login, currentUser, isAdmin } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (currentUser) {
+            navigate(isAdmin ? '/admin' : '/');
+        }
+    }, [currentUser, isAdmin, navigate]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Implementation for Firebase Auth will go here later
-        alert("Login implementation coming soon!");
+        try {
+            setError('');
+            setLoading(true);
+            await login(email, password);
+            // Redirection logic is handled by useEffect to wait for context update
+        } catch (err) {
+            setError('Failed to log in: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -19,6 +40,7 @@ export default function Login() {
                         Sign in to your Rangitva account
                     </p>
                 </div>
+                {error && <div className="bg-red-50 text-red-500 p-3 rounded text-sm text-center border border-red-200">{error}</div>}
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div className="rounded-md shadow-sm space-y-4">
                         <div>
@@ -48,10 +70,17 @@ export default function Login() {
                     <div>
                         <button
                             type="submit"
-                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-sm text-white bg-accent-500 hover:bg-accent-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500 shadow-md uppercase tracking-widest transition-colors duration-300"
+                            disabled={loading}
+                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-sm text-white bg-accent-500 hover:bg-accent-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500 shadow-md uppercase tracking-widest transition-colors duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            Sign in
+                            {loading ? 'Signing in...' : 'Sign in'}
                         </button>
+                    </div>
+
+                    <div className="text-center mt-4">
+                        <Link to="/signup" className="text-sm font-medium text-accent-500 hover:text-primary-900 transition-colors">
+                            Need an account? Sign up here
+                        </Link>
                     </div>
                 </form >
             </div >

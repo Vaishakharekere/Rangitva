@@ -1,15 +1,43 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Signup() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [address, setAddress] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const { signup, currentUser, isAdmin } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (currentUser) {
+            navigate(isAdmin ? '/admin' : '/');
+        }
+    }, [currentUser, isAdmin, navigate]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Implementation for Firebase Auth will go here later
-        alert("Signup implementation coming soon!");
+
+        if (password !== confirmPassword) {
+            return setError("Passwords do not match.");
+        }
+
+        try {
+            setError('');
+            setLoading(true);
+            await signup(email, password, name, phone, address);
+            // Redirection logic is handled by useEffect to wait for context update
+        } catch (err) {
+            setError('Failed to create an account: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -21,6 +49,7 @@ export default function Signup() {
                         Join the Rangitva community
                     </p>
                 </div>
+                {error && <div className="bg-red-50 text-red-500 p-3 rounded text-sm text-center border border-red-200">{error}</div>}
                 <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
                     <div className="rounded-md space-y-4">
                         <div>
@@ -45,12 +74,41 @@ export default function Signup() {
                         </div>
                         <div>
                             <input
+                                type="tel"
+                                required
+                                className="appearance-none block w-full px-3 py-3 border border-[#E9DAC1] bg-transparent text-primary-900 focus:outline-none focus:ring-accent-500 focus:border-accent-500 sm:text-sm"
+                                placeholder="Phone Number"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <textarea
+                                className="appearance-none block w-full px-3 py-3 border border-[#E9DAC1] bg-transparent text-primary-900 focus:outline-none focus:ring-accent-500 focus:border-accent-500 sm:text-sm resize-none"
+                                placeholder="Shipping/Billing Address (Optional)"
+                                rows="3"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <input
                                 type="password"
                                 required
-                                className="appearance-none block w-full px-3 py-3 border border-[#E9DAC1] bg-transparent placeholder-primary-600/70 text-primary-900 focus:outline-none focus:ring-accent-500 focus:border-accent-500 sm:text-sm"
+                                className="appearance-none block w-full px-3 py-3 border border-[#E9DAC1] bg-transparent text-primary-900 focus:outline-none focus:ring-accent-500 focus:border-accent-500 sm:text-sm"
                                 placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <input
+                                type="password"
+                                required
+                                className="appearance-none block w-full px-3 py-3 border border-[#E9DAC1] bg-transparent text-primary-900 focus:outline-none focus:ring-accent-500 focus:border-accent-500 sm:text-sm"
+                                placeholder="Confirm Password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
                             />
                         </div>
                     </div>
@@ -58,9 +116,10 @@ export default function Signup() {
                     <div>
                         <button
                             type="submit"
-                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-sm text-white bg-accent-500 hover:bg-accent-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500 shadow-md uppercase tracking-widest transition-colors duration-300"
+                            disabled={loading}
+                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-sm text-white bg-accent-500 hover:bg-accent-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500 shadow-md uppercase tracking-widest transition-colors duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            Sign up
+                            {loading ? 'Signing up...' : 'Sign up'}
                         </button>
                     </div>
 
