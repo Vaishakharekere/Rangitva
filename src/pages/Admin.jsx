@@ -422,7 +422,14 @@ export default function Admin() {
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
                                             <h3 className="font-bold text-primary-900">{order.customerInfo.name}</h3>
-                                            <p className="text-sm text-primary-600 border-b border-primary-200 pb-2 mb-2 inline-block"><a href={`mailto:${order.customerInfo.email}`}>{order.customerInfo.email}</a> • {order.customerInfo.phone}</p>
+                                            <div className="text-sm text-primary-600 pb-2 mb-2 inline-block border-b border-primary-200 w-full">
+                                                <div className="flex flex-col gap-1">
+                                                    <span><strong>Contact:</strong> <a href={`mailto:${order.customerInfo.email}`} className="text-accent-500 hover:underline">{order.customerInfo.email}</a> • {order.customerInfo.phone}</span>
+                                                    {order.customerInfo.accountEmail && order.customerInfo.accountEmail !== order.customerInfo.email && (
+                                                        <span className="text-xs text-primary-500"><strong>Account:</strong> {order.customerInfo.accountEmail}</span>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
                                         <select
                                             value={order.status}

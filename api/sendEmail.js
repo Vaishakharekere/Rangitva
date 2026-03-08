@@ -4,7 +4,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { subject, htmlContent, to, replyTo } = req.body;
+        const { subject, htmlContent, to, replyTo, cc } = req.body;
 
         // Use process.env for Vercel Serverless Functions instead of import.meta.env
         const brevoApiKey = process.env.VITE_BREVO_API_KEY;
@@ -23,6 +23,17 @@ export default async function handler(req, res) {
 
         if (replyTo) {
             payload.replyTo = replyTo;
+        }
+
+        // Brevo throws an error if an email is in both 'to' and 'cc'.
+        // We must filter out any CCs that exactly match the primary To address.
+        if (cc && Array.isArray(cc) && cc.length > 0) {
+            const primaryEmails = payload.to.map(t => t.email.toLowerCase());
+            const filteredCc = cc.filter(c => !primaryEmails.includes(c.email.toLowerCase()));
+
+            if (filteredCc.length > 0) {
+                payload.cc = filteredCc;
+            }
         }
 
         const response = await fetch('https://api.brevo.com/v3/smtp/email', {

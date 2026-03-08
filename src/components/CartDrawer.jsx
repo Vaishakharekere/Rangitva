@@ -59,8 +59,8 @@ export default function CartDrawer() {
         const orderData = {
             userId: currentUser.uid,
             customerInfo: {
-                ...formData,
-                email: currentUser.email // force matching email
+                ...formData, // This allows the custom typed email to be saved
+                accountEmail: currentUser.email // Record account email silently for reference
             },
             items: cartItems.map(item => ({
                 id: item.id,
@@ -105,7 +105,9 @@ export default function CartDrawer() {
                     'content-type': 'application/json'
                 },
                 body: JSON.stringify({
-                    // 'to' is omitted so the backend defaults to the admin email
+                    // Send to admin, CC the customer
+                    to: [{ email: import.meta.env.VITE_ADMIN_EMAIL, name: "Admin" }],
+                    cc: [{ email: formData.email, name: formData.name }],
                     replyTo: { email: formData.email, name: formData.name },
                     subject: `New Order Request from ${formData.name}`,
                     htmlContent: emailHtml
